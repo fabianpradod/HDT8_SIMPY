@@ -75,7 +75,7 @@ class EmergencyService:
         patient.times['startTriage'] = self.env.now
         with self.nurses.request() as req:
             yield req
-            triageTime = random.uniform(5, 15)
+            triageTime = random.uniform(5, 15) # Tiempo promedio de una enfermera para asignar un triage
             yield self.env.timeout(triageTime)
             patient.times['endTriage'] = self.env.now
 
@@ -89,12 +89,12 @@ class EmergencyService:
         patient.times['startDoctor'] = self.env.now
         with self.doctors.request(priority=patient.priority) as req:
             yield req
-            doctorTime = random.uniform(15, 45)
+            doctorTime = random.uniform(15, 45) # Tiempo promedio de atencion de un doctor al paciente
             yield self.env.timeout(doctorTime)
             patient.times['endDoctor'] = self.env.now
 
-            needsXray = random.random() < 0.216
-            needsLab = random.random() < random.uniform(0.04, 0.09)
+            needsXray = random.random() < 0.216 # Porcetaje promedio de gente que necesita un xray
+            needsLab = random.random() < random.uniform(0.04, 0.09) # Porcentaje promedio de gente que necesita pruebas de lab
 
             if needsXray:
                 yield self.env.timeout(random.uniform(1, 5))
@@ -102,7 +102,7 @@ class EmergencyService:
                 patient.times['startXray'] = self.env.now
                 with self.xrays.request(priority=patient.priority) as reqXray:
                     yield reqXray
-                    xrayTime = random.uniform(15, 30)
+                    xrayTime = random.uniform(15, 30) # Tiempo promedio de xray
                     yield self.env.timeout(xrayTime)
                     patient.times['endXray'] = self.env.now
                     patient.exams['xray'] = True
@@ -116,7 +116,7 @@ class EmergencyService:
                 patient.times['startLab'] = self.env.now
                 with self.labs.request(priority=patient.priority) as reqLab:
                     yield reqLab
-                    labTime = random.uniform(30, 60)
+                    labTime = random.uniform(30, 60) # Tiempo promedio de pruebas de laboratorio
                     yield self.env.timeout(labTime)
                     patient.times['endLab'] = self.env.now
                     patient.exams['lab'] = True
@@ -450,21 +450,21 @@ def generateGraphs(data):
                         textcoords="offset points",
                         ha='center', va='bottom', fontsize=8)
     
-    # 2. Grafico de distribucion de prioridades - MODIFICADO: Ahora vertical en lugar de horizontal
+    # 2. Grafico de distribucion de prioridades 
     num_configs = len(results)
-    fig, axes = plt.subplots(num_configs, 1, figsize=(8, 4 * num_configs))  # Cambiado a vertical
-    
-    # Manejar el caso de una sola configuración
+    fig, axes = plt.subplots(1, num_configs, figsize=(6 * num_configs, 5))
+
     if num_configs == 1:
         axes = [axes]
-        
+
     for i, (ax, priorityData) in enumerate(zip(axes, graphData['priorityDistribution'])):
         priorities = list(priorityData.keys())
         counts = list(priorityData.values())
         ax.pie(counts, labels=priorities, autopct='%1.1f%%', startangle=90)
-        ax.set_title(f'Config {i+1}: Distribucion por Prioridad')
-    
-    plt.tight_layout()
+        ax.set_title(f'Config {i+1}', pad=20)
+
+    plt.subplots_adjust(wspace=0.4)
+    plt.tight_layout(pad=3.0)
     
     # 3. Grafico de eficiencia de costos
     fig, ax = plt.subplots(figsize=(10, 6))
