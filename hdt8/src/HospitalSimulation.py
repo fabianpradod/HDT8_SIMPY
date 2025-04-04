@@ -450,23 +450,7 @@ def generateGraphs(data):
                         textcoords="offset points",
                         ha='center', va='bottom', fontsize=8)
     
-    # 2. Grafico de distribucion de prioridades 
-    num_configs = len(results)
-    fig, axes = plt.subplots(1, num_configs, figsize=(6 * num_configs, 5))
-
-    if num_configs == 1:
-        axes = [axes]
-
-    for i, (ax, priorityData) in enumerate(zip(axes, graphData['priorityDistribution'])):
-        priorities = list(priorityData.keys())
-        counts = list(priorityData.values())
-        ax.pie(counts, labels=priorities, autopct='%1.1f%%', startangle=90)
-        ax.set_title(f'Config {i+1}', pad=20)
-
-    plt.subplots_adjust(wspace=0.4)
-    plt.tight_layout(pad=3.0)
-    
-    # 3. Grafico de eficiencia de costos
+    # 2. Grafico de eficiencia de costos
     fig, ax = plt.subplots(figsize=(10, 6))
     
     costEfficiency = []
@@ -501,7 +485,7 @@ def generateGraphs(data):
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax.legend(lines1 + lines2, labels1 + labels2, loc='upper right')
     
-    # 4. Grafico de costos
+    # 3. Grafico de costos
     fig, ax = plt.subplots(figsize=(12, 6))
     
     nurseCosts = [data['nurses'] for data in graphData['resourceCosts']]
